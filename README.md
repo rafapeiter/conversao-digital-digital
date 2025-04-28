@@ -1,6 +1,7 @@
 # 📄 Simulador de Codificação Digital-Digital
 
 Este projeto é um **simulador gráfico de codificação de sinais digitais**, desenvolvido em **HTML5** e **JavaScript**.
+
 O projeto foi criado como material de apoio para a disciplina de **Comunicação de Dados**, com o objetivo de facilitar o entendimento prático dos principais métodos de codificação digital.
 
 ## 🚀 Funcionalidades
