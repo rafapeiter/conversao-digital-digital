@@ -30,10 +30,3 @@ O projeto foi criado como material de apoio para a disciplina de **Comunicação
 4. Clique em **Gerar Sinal**.
 
 Pronto! O gráfico será exibido imediatamente.
-
-## 🎨 Recursos Visuais
-
-- Eixo de tempo desenhado automaticamente.
-- Bits numerados acima dos sinais.
-- Codificação do sinal colorida para facilitar a leitura.
-- Organização dos bits em intervalos de tempo fixos.
