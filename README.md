@@ -24,7 +24,7 @@ O projeto foi criado como material de apoio para a disciplina de **Comunicação
 
 ## 🛠️ Como usar
 
-1. Acessar o link https://conversao-digital-digital.vercel.app/
+1. Acessar o link https://conversor-digital-digital.vercel.app/
 2. Digite a sequência de bits desejada.
 3. Selecione o tipo de codificação.
 4. Clique em **Gerar Sinal**.
