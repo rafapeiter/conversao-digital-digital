@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Simulador de Codificação Digital</title>
+</head>
+<body>
+  <h2>Simulador de Codificação Digital-Digital</h2>
+
+  <label>Digite os bits (ex: 0101101):</label><br>
+  <input type="text" id="inputBits" value="0101101"><br><br>
+
+  <label>Escolha o tipo de codificação:</label><br>
+  <select id="codingType">
+    <option value="nrz">NRZ-L</option>
+	<option value="nrzi">NRZ-I</option>
+    <option value="manchester">Manchester</option>
+    <option value="diff_manchester">Manchester Diferencial</option>
+    <option value="ami">AMI</option>
+	<option value="pseudoternary">Pseudoternário</option>
+	<option value="mlt3">MLT-3</option>
+  </select><br><br>
+
+  <button onclick="generateSignal()">Gerar Sinal</button>
+
+  <h3>Resultado:</h3>
+  <canvas id="signalCanvas" width="1200" height="300" style="border:1px solid #000;"></canvas>
+
+  <script>
+    function generateSignal() {
+      const bits = document.getElementById('inputBits').value.trim();
+      const type = document.getElementById('codingType').value;
+      const canvas = document.getElementById('signalCanvas');
+      const ctx = canvas.getContext('2d');
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);  
+
+      const startX = 50;
+      const startY = 150;
+      const bitWidth = 80;
+      const high = 80;
+      const low = 220;
+	  
+	  // >>> Aqui desenha o eixo X <<<
+	  ctx.beginPath();
+	  ctx.strokeStyle = "black";
+	  ctx.lineWidth = 1;
+	  ctx.moveTo(0, startY);
+	  ctx.lineTo(canvas.width, startY);
+	  ctx.stroke();
+
+      // Desenha linhas verticais, números e bits
+      ctx.font = "14px Arial";
+      ctx.fillStyle = "black";
+      ctx.strokeStyle = "lightgray";
+
+      for (let i = 0; i <= bits.length; i++) {
+        const x = startX + i * bitWidth;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();        
+      }
+
+      for (let i = 0; i < bits.length; i++) {
+        const centerX = startX + i * bitWidth + bitWidth / 2 - 5;
+        ctx.fillText(bits[i], centerX, 30);
+      }
+
+      ctx.beginPath();
+      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 3;
+
+      let x = startX;
+
+      if (type === "nrz") {
+        ctx.moveTo(startX, bits[0] == '0' ? high : low);
+        for (let i = 0; i < bits.length; i++) {
+          const y = bits[i] == '0' ? high : low;
+          ctx.lineTo(x, y);
+          x += bitWidth;
+          ctx.lineTo(x, y);
+        }
+      }
+	  
+	  
+	  else if (type === "nrzi") {
+		  let currentLevel = low; // Começa em nível baixo
+		  ctx.moveTo(startX, currentLevel);
+
+		  for (let i = 0; i < bits.length; i++) {
+			const nextX = x + bitWidth;
+
+			if (bits[i] === '1') {
+			  // Bit 1 → inverte nível
+			  currentLevel = (currentLevel === high) ? low : high;
+			  ctx.lineTo(x, currentLevel);
+			} else {
+			  // Bit 0 → mantém nível
+			  ctx.lineTo(x, currentLevel);
+			}
+
+			ctx.lineTo(nextX, currentLevel);
+			x = nextX;
+		  }
+		}
+
+      else if (type === "manchester") {
+        ctx.moveTo(startX, bits[0] == '0' ? high : low);
+        for (let i = 0; i < bits.length; i++) {
+          const midX = x + bitWidth / 2;
+          if (bits[i] == '0') {
+            ctx.lineTo(x, high);
+            ctx.lineTo(midX, high);
+            ctx.lineTo(midX, low);
+            ctx.lineTo(x + bitWidth, low);
+          } else {
+            ctx.lineTo(x, low);
+            ctx.lineTo(midX, low);
+            ctx.lineTo(midX, high);
+            ctx.lineTo(x + bitWidth, high);
+          }
+          x += bitWidth;
+        }
+      }
+
+      else if (type === "diff_manchester") {
+		let currentLevel = high; // Começa em HIGH
+		ctx.moveTo(startX, currentLevel);
+
+		for (let i = 0; i < bits.length; i++) {
+		const midX = x + bitWidth / 2;
+
+		// Para bit 0: troca nível no início
+		// Para bit 1: mantém nível no início
+		if (bits[i] === '0') {
+		  currentLevel = (currentLevel === high) ? low : high; // Troca nível no início
+		  ctx.lineTo(x, currentLevel);
+		} else {
+		  ctx.lineTo(x, currentLevel); // Mantém nível
+		}
+
+		// Transição obrigatória no meio
+		ctx.lineTo(midX, currentLevel);
+		currentLevel = (currentLevel === high) ? low : high; // Sempre troca no meio
+		ctx.lineTo(midX, currentLevel);
+
+		ctx.lineTo(x + bitWidth, currentLevel);
+		x += bitWidth;
+		}
+	  }
+
+      else if (type === "ami") {
+		let lastPulse = -1; // começa de forma que o primeiro 1 vai para cima (positivo)
+		ctx.moveTo(startX, startY); // Começa no meio
+
+		for (let i = 0; i < bits.length; i++) {
+		const bit = bits[i];
+		const nextX = x + bitWidth;
+
+		if (bit === '0') {
+		  // Bit 0 ? continua linha no meio
+		  ctx.lineTo(x, startY);
+		  ctx.lineTo(nextX, startY);
+		} else {
+		  // Bit 1 ? alterna pulso
+		  if (lastPulse <= 0) {
+			// Se último foi 0 ou negativo ➔ agora sobe
+			ctx.lineTo(x, startY);
+			ctx.lineTo(x, high); // sobe
+			ctx.lineTo(nextX, high);
+			lastPulse = 1;
+		  } else {
+			// Se último foi positivo ➔ agora desce
+			ctx.lineTo(x, startY);
+			ctx.lineTo(x, low); // desce
+			ctx.lineTo(nextX, low);
+			lastPulse = -1;
+		  }
+		}
+		x = nextX;
+		}
+	}
+	
+	else if (type === "pseudoternary") {
+		let lastPulse = -1; // Começa de forma que o primeiro 0 vaipara cima
+		ctx.moveTo(startX, startY); // Começa no meio
+
+		for (let i = 0; i < bits.length; i++) {
+		const bit = bits[i];
+		const nextX = x + bitWidth;
+
+		if (bit === '1') {
+		  // Bit 1 ? linha no meio
+		  ctx.lineTo(x, startY);
+		  ctx.lineTo(nextX, startY);
+		} else {
+		  // Bit 0 ? alterna pulso
+		  if (lastPulse <= 0) {
+			// Último foi zero ou negativo ➔ agora sobe
+			ctx.lineTo(x, startY);
+			ctx.lineTo(x, high);
+			ctx.lineTo(nextX, high);
+			lastPulse = 1;
+		  } else {
+			// Último foi positivo ➔ agora desce
+			ctx.lineTo(x, startY);
+			ctx.lineTo(x, low);
+			ctx.lineTo(nextX, low);
+			lastPulse = -1;
+		  }
+		}
+		x = nextX;
+		}
+	}
+	
+	else if (type === "mlt3") {
+	  const states = [0, high, 0, low]; // Sequência: 0 -> +V -> 0 -> -V -> 0 ...
+	  let currentStateIndex = 0; // Começa no 0
+	  ctx.moveTo(startX, startY); // Começa em 0 (meio)
+
+	  for (let i = 0; i < bits.length; i++) {
+		const bit = bits[i];
+		const nextX = x + bitWidth;
+
+		if (bit === '1') {
+		  currentStateIndex = (currentStateIndex + 1) % states.length; // Avança para próximo estado
+		}
+		// Se bit 0, mantém currentStateIndex
+
+		const level = (states[currentStateIndex] === 0) ? startY : states[currentStateIndex];
+		ctx.lineTo(x, level);
+		ctx.lineTo(nextX, level);
+		x = nextX;
+	  }
+	}
+
+      ctx.stroke();
+    }
+  </script>
+</body>
+</html>
