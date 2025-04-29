@@ -185,7 +185,7 @@
 			}
 
 			else if (type === "pseudoternary") {
-				let lastPulse = -1; // Começa de forma que o primeiro 0 vaipara cima
+				let lastPulse = -1; // Começa de forma que o primeiro 0 vai para cima
 				ctx.moveTo(startX, startY); // Começa no meio
 
 				for (let i = 0; i < bits.length; i++) {
@@ -193,11 +193,11 @@
 					const nextX = x + bitWidth;
 
 					if (bit === '1') {
-						// Bit 1 ? linha no meio
+						// Bit 1 ➔ linha no meio
 						ctx.lineTo(x, startY);
 						ctx.lineTo(nextX, startY);
 					} else {
-						// Bit 0 ? alterna pulso
+						// Bit 0 ➔ alterna pulso
 						if (lastPulse <= 0) {
 							// Último foi zero ou negativo ➔ agora sobe
 							ctx.lineTo(x, startY);
