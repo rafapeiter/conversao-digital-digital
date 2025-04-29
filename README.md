@@ -16,11 +16,6 @@ O projeto foi criado como material de apoio para a disciplina de **Comunicação
   - **Pseudoternário**
   - **MLT-3** (Multi-Level Transmission 3)
 - Geração automática do **gráfico de sinal** correspondente.
-- **Desenha**:
-  - Bits informados no topo,
-  - Eixo X (linha de tempo),
-  - Linhas verticais separando cada bit.
-- Sinal desenhado em **tempo real** no navegador.
 
 ## 🛠️ Como usar
 
